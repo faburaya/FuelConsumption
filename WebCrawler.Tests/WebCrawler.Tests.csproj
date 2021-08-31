@@ -11,6 +11,8 @@
   <ItemGroup>
     <None Remove="test_web_page_brands.html" />
     <None Remove="test_web_page_models.html" />
+    <None Remove="test_web_page_trim_levels.html" />
+    <None Remove="test_web_page_versions.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,6 +20,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="test_web_page_models.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="test_web_page_trim_levels.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="test_web_page_versions.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

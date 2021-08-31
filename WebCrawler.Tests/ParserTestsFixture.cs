@@ -25,5 +25,15 @@ namespace FuelConsumption.WebCrawler.Tests
 
         public string CarModelsWebPageContentSample =>
             _carModelsWebPageContentSample ??= File.ReadAllText("test_web_page_models.html");
+
+        private string _modelVersionsWebPageContentSample;
+
+        public string ModelVersionsWebPageContentSample =>
+            _modelVersionsWebPageContentSample ??= File.ReadAllText("test_web_page_versions.html");
+
+        private string _trimLevlsWebPageContentSample;
+
+        public string TrimLevelsWebPageContentSample =>
+            _trimLevlsWebPageContentSample ??= File.ReadAllText("test_web_page_trim_levels.html");
     }
 }
