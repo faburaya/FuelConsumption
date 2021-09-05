@@ -11,14 +11,8 @@ namespace FuelConsumption.WebCrawler
     /// </summary>
     public class CarBrandsHyperlinksParser : Reusable.WebAccess.IHyperlinksParser
     {
-        private Regex CarBrandHyperlinkRegex { get; }
-
-        public CarBrandsHyperlinksParser()
-        {
-            CarBrandHyperlinkRegex = new Regex(
-                @"https://www.ultimatespecs.com/de/car-specs/([\w-]+)-models",
-                RegexOptions.Compiled);
-        }
+        private static Regex CarBrandHyperlinkRegex { get; } =
+            new Regex(@"https://www.ultimatespecs.com/de/car-specs/([\w-]+)-models", RegexOptions.Compiled);
 
         /// <inheritdoc/>
         public IEnumerable<Uri> ParseHyperlinks(string hypertext, IEnumerable<string> keywords)
