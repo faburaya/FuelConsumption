@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>.NETCoreApp,Version=v3.1</TargetFramework>
@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="samples\test_web_page_brands.html" />
+    <None Remove="samples\test_web_page_models.html" />
+    <None Remove="samples\test_web_page_specs.html" />
+    <None Remove="samples\test_web_page_trim_levels.html" />
+    <None Remove="samples\test_web_page_versions.html" />
     <None Remove="test_web_page_brands.html" />
     <None Remove="test_web_page_models.html" />
     <None Remove="test_web_page_trim_levels.html" />
@@ -16,16 +21,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="test_web_page_brands.html">
+    <Content Include="samples\test_web_page_brands.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="test_web_page_models.html">
+    <Content Include="samples\test_web_page_models.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="test_web_page_trim_levels.html">
+    <Content Include="samples\test_web_page_specs.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="test_web_page_versions.html">
+    <Content Include="samples\test_web_page_trim_levels.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="samples\test_web_page_versions.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -48,6 +56,24 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebCrawler\WebCrawler.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="CarBrandHyperlinksParserTest.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="CarModelHyperlinksParserTest.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="ModelVersionHyperlinksParserTest.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="ParserTestsFixture.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="TrimLevelHyperlinksParserTest.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
 
 </Project>

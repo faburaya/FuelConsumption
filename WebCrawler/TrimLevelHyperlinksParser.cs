@@ -9,7 +9,7 @@ namespace FuelConsumption.WebCrawler
     /// Zergliedert den Inhalt aus https://www.ultimatespecs.com/de/car-specs/
     /// bezüglich auf die Trimmstuffe einer bestimmten Version eines Automodells.
     /// </summary>
-    public class TrimLevelHyperlinksParser
+    public class TrimLevelHyperlinksParser : Reusable.WebAccess.IHyperlinksParser
     {
         private static Regex TrimLevelHyperlinkRegex { get; } =
             new Regex(@"https://www.ultimatespecs.com/de/car-specs/(?<brand>[\w-]+)/\d+/\k<brand>-(?<version>[\w-]+).html", RegexOptions.Compiled);

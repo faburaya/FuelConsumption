@@ -7,16 +7,16 @@ using Xunit;
 namespace FuelConsumption.WebCrawler.Tests
 {
     [Collection("ParserTests")]
-    public class CarModelsHyperlinksParserTest
+    public class CarModelHyperlinksParserTest
     {
         private ParserTestsFixture Fixture { get; }
 
-        private CarModelsHyperlinksParser Parser { get; }
+        private CarModelHyperlinksParser Parser { get; }
 
-        public CarModelsHyperlinksParserTest(ParserTestsFixture fixture)
+        public CarModelHyperlinksParserTest(ParserTestsFixture fixture)
         {
             Fixture = fixture;
-            Parser = new CarModelsHyperlinksParser();
+            Parser = new CarModelHyperlinksParser();
         }
 
         [Fact]

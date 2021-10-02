@@ -9,7 +9,7 @@ namespace FuelConsumption.WebCrawler
     /// Zeglidert den Inhalt aus https://www.ultimatespecs.com/de/car-specs/*-models,
     /// um die Hyperlinks zu den Automodellen zu sammeln.
     /// </summary>
-    public class CarModelsHyperlinksParser : Reusable.WebAccess.IHyperlinksParser
+    public class CarModelHyperlinksParser : Reusable.WebAccess.IHyperlinksParser
     {
         private static Regex[] CarModelHyperlinkRegexes { get; } = new[] {
             new Regex(@"https://www.ultimatespecs.com/de/car-specs/(?<brand>[\w-]+)-models/\k<brand>-(?<model>[\w-]+)",           RegexOptions.Compiled),
