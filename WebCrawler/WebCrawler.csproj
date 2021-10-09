@@ -14,7 +14,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="com.faburaya.Reusable.DataModels" Version="2.2.1" />
     <PackageReference Include="com.faburaya.Reusable.WebAccess" Version="1.1.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.37" />
   </ItemGroup>
 
 </Project>

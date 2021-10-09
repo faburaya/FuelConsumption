@@ -20,31 +20,31 @@ namespace FuelConsumption.WebCrawler.Tests
 
         public string CarBrandsWebPageContentSample =>
             _carBrandsWebPageContentSample ??= File.ReadAllText(
-                Path.Combine("sample", "test_web_page_brands.html"));
+                Path.Combine("samples", "test_web_page_brands.html"));
 
         private string _carModelsWebPageContentSample;
 
         public string CarModelsWebPageContentSample =>
             _carModelsWebPageContentSample ??= File.ReadAllText(
-                Path.Combine("sample", "test_web_page_models.html"));
+                Path.Combine("samples", "test_web_page_models.html"));
 
         private string _modelVersionsWebPageContentSample;
 
         public string ModelVersionsWebPageContentSample =>
             _modelVersionsWebPageContentSample ??= File.ReadAllText(
-                Path.Combine("sample", "test_web_page_versions.html"));
+                Path.Combine("samples", "test_web_page_versions.html"));
 
         private string _trimLevelsWebPageContentSample;
 
         public string TrimLevelsWebPageContentSample =>
             _trimLevelsWebPageContentSample ??= File.ReadAllText(
-                Path.Combine("sample", "test_web_page_trim_levels.html"));
+                Path.Combine("samples", "test_web_page_trim_levels.html"));
 
         private string _carSpecsWebPageContentSample;
 
         public string CarSpecsWebPageContentSample =>
             _carSpecsWebPageContentSample ??= File.ReadAllText(
-                Path.Combine("sample", "test_web_page_specs.html"));
+                Path.Combine("samples", "test_web_page_specs.html"));
     }
 
 }// end of namespace FuelConsumption.WebCrawler.Tests
