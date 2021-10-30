@@ -11,19 +11,34 @@ namespace FuelConsumption.WebCrawler.Tests
     {
         private ParserTestsFixture Fixture { get; }
 
-        private ModelVersionHyperlinksParser Parser { get; }
-
         public ModelVersionHyperlinksParserTest(ParserTestsFixture fixture)
         {
             Fixture = fixture;
-            Parser = new ModelVersionHyperlinksParser();
         }
 
         [Fact]
-        public void ParseHyperlinks_NoKeywords_GiveAll()
+        public void ParseHyperlinks_DoNotParse_GiveNone()
         {
-            IEnumerable<Uri> hyperlinks =
-                Parser.ParseHyperlinks(Fixture.ModelVersionsWebPageContentSample, null);
+            var parser = new ModelVersionHyperlinksParser(
+                (string hypertext) => false, // zergliedere die Weite NICHT
+                (string modelVersion) => true // gib alle Versionen zurück
+            );
+
+            IEnumerable<Uri> hyperlinks = parser.ParseHyperlinks(Fixture.ModelVersionsWebPageContentSample);
+
+            Assert.NotNull(hyperlinks);
+            Assert.Empty(hyperlinks);
+        }
+
+        [Fact]
+        public void ParseHyperlinks_DoParse_DoNotFilter_GiveAll()
+        {
+            var parser = new ModelVersionHyperlinksParser(
+                (string hypertext) => true, // zergliedere die Weite
+                (string modelVersion) => true // gib alle Versionen zurück
+            );
+
+            IEnumerable<Uri> hyperlinks = parser.ParseHyperlinks(Fixture.ModelVersionsWebPageContentSample);
 
             Assert.NotNull(hyperlinks);
             IEnumerable<string> urls = from address in hyperlinks select address.ToString().ToLower();
@@ -33,10 +48,19 @@ namespace FuelConsumption.WebCrawler.Tests
         }
 
         [Fact]
-        public void ParseHyperlinks_HasKeywords_GiveOnesContainingKeyword()
+        public void ParseHyperlinks_DoParse_DoFilter_GiveOnesContainingKeyword()
         {
-            IEnumerable<Uri> hyperlinks =
-                Parser.ParseHyperlinks(Fixture.ModelVersionsWebPageContentSample, new[] { "FACELIFT", "JETTA-6" });
+            var keywords = new[] { "FACELIFT", "JETTA-6" };
+
+            var parser = new ModelVersionHyperlinksParser(
+                (string hypertext) => true, // zergliedere die Weite
+                (string modelVersion) => { // suche die Versionen aus:
+                    modelVersion = modelVersion.ToUpper();
+                    return keywords.Any(keyword => modelVersion.Contains(keyword));
+                }
+            );
+
+            IEnumerable<Uri> hyperlinks = parser.ParseHyperlinks(Fixture.ModelVersionsWebPageContentSample);
 
             Assert.NotNull(hyperlinks);
             IEnumerable<string> urls = from address in hyperlinks select address.ToString().ToLower();

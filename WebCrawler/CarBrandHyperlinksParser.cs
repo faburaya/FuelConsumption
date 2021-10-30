@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace FuelConsumption.WebCrawler
@@ -14,19 +13,38 @@ namespace FuelConsumption.WebCrawler
         private static Regex CarBrandHyperlinkRegex { get; } =
             new Regex(@"https://www.ultimatespecs.com/de/car-specs/([\w-]+)-models", RegexOptions.Compiled);
 
-        /// <inheritdoc/>
-        public IEnumerable<Uri> ParseHyperlinks(string hypertext, IEnumerable<string> keywords)
-        {
-            var brandsByName = new SortedDictionary<string, Uri>();
+        private readonly Func<string, bool> _shouldParsePage;
 
-            keywords = from x in (keywords ?? new string[0]) select x.ToLower();
+        private readonly Func<string, bool> _carBrandFilter;
+
+        /// <summary>
+        /// Erstellt eine neue Instanz von <see cref="CarBrandHyperlinksParser"/>.
+        /// </summary>
+        /// <param name="shouldParsePage">Diese Rückrufaktion wird nur einmal aufgerufen mit dem gesamten Inhalt des Hypertexts und entscheidet, ob der Hypertext überhaupt zergliedert wird.</param>
+        /// <param name="carBrandFilter">Diese Rückrufaktion sucht die Namen der Autohersteller aus, deren Hyperlinks zurückgegeben werden.</param>
+        public CarBrandHyperlinksParser(Func<string, bool> shouldParsePage,
+                                        Func<string, bool> carBrandFilter)
+        {
+            _shouldParsePage = shouldParsePage;
+            _carBrandFilter = carBrandFilter;
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<Uri> ParseHyperlinks(string hypertext)
+        {
+            if (!_shouldParsePage(hypertext))
+            {
+                return new Uri[]{ };
+            }
+
+            var brandsByName = new SortedDictionary<string, Uri>();
 
             MatchCollection matches = CarBrandHyperlinkRegex.Matches(hypertext);
             foreach (Match match in matches)
             {
                 string carBrand = match.Groups[1].Value.ToLower();
 
-                if (!keywords.Any() || keywords.Any(keyword => carBrand.Contains(keyword)))
+                if (_carBrandFilter(carBrand))
                 {
                     brandsByName[carBrand] = new Uri(match.Groups[0].Value);
                 }

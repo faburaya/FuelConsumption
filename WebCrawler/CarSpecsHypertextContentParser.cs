@@ -6,13 +6,15 @@ using System.Text.RegularExpressions;
 
 using HtmlAgilityPack;
 
+using Reusable.WebAccess;
+
 namespace FuelConsumption.WebCrawler
 {
     /// <summary>
     /// Zergliedert den Inhalt aus https://www.ultimatespecs.com/de,
     /// um die Spezifikationen eines bestimmten Automodells zu sammeln.
     /// </summary>
-    public class CarSpecsHypertextContentParser : Reusable.WebAccess.IHypertextContentParser<CarSpecifications>
+    public class CarSpecsHypertextContentParser : IHypertextContentParser<CarSpecifications>
     {
         public IEnumerable<CarSpecifications> ParseContent(string hypertext)
         {
@@ -47,7 +49,7 @@ namespace FuelConsumption.WebCrawler
 
             // meldet alle Zerglieder, die nicht erfolgreich waren
             throw new AggregateException("Zergliederung der Spezifikationen is gescheitert!",
-                from parser in parsers select new Exception($"{parser.Method.Name} ohne Erfolg"));
+                from parser in parsers select new ParserException($"{parser.Method.Name} ohne Erfolg"));
         }
 
         private delegate bool CallbackTryParseRow(HtmlNode rowElement, CarSpecifications specs);
@@ -99,7 +101,7 @@ namespace FuelConsumption.WebCrawler
                 return FuelType.CNG;
             }
 
-            throw new ArgumentException($"'{valueStamp}' ist kein anerkannter Kraftstoff!");
+            throw new ParserException($"'{valueStamp}' ist kein anerkannter Kraftstoff!");
         }
 
         private static bool TryParseFuelSystem(HtmlNode element, CarSpecifications specs)
@@ -131,7 +133,7 @@ namespace FuelConsumption.WebCrawler
                 return value;
             }
 
-            throw new ArgumentException(
+            throw new ParserException(
                 $"Verdichtung kann nicht zergliedert werden: '{valueStamp}'");
         }
 
@@ -164,13 +166,13 @@ namespace FuelConsumption.WebCrawler
                         transmission = TransmissionType.Manual;
                         break;
                     default:
-                        throw new ArgumentException($"Das Getriebe '{match.Groups[0].Value}' kann nicht zergliedert werden!");
+                        throw new ParserException($"Das Getriebe '{match.Groups[0].Value}' kann nicht zergliedert werden!");
                 }
 
                 return (gearSpeedsCount, transmission);
             }
 
-            throw new ArgumentException($"Zergliederung des Getriebes ist gescheitert: {valueStamp}");
+            throw new ParserException($"Zergliederung des Getriebes ist gescheitert: {valueStamp}");
         }
 
         private static bool TryParsePowerAndRotation(HtmlNode element, CarSpecifications specs)
@@ -196,7 +198,7 @@ namespace FuelConsumption.WebCrawler
                 return (maxPower, rotationAtMaxPower);
             }
 
-            throw new ArgumentException($"Zergliederung der Motorleistung ist gescheitert: {valueStamp}");
+            throw new ParserException($"Zergliederung der Motorleistung ist gescheitert: {valueStamp}");
         }
 
         private static readonly Regex cylinderCapacityRegex = new Regex(@"(\d+) cm3", RegexOptions.Compiled);
@@ -266,7 +268,7 @@ namespace FuelConsumption.WebCrawler
                 return value;
             }
 
-            throw new ArgumentException($"{label} kann nicht zergliedert werden: '{valueStamp}'");
+            throw new ParserException($"{label} kann nicht zergliedert werden: '{valueStamp}'");
         }
 
         /// <summary>
@@ -283,7 +285,7 @@ namespace FuelConsumption.WebCrawler
         {
             if (rowElement.Name != "tr" || rowElement.NodeType != HtmlNodeType.Element)
             {
-                throw new ArgumentException(
+                throw new ParserException(
                     $"Unerwartetes HTML-Node {rowElement.Name} des Typs {rowElement.NodeType}");
             }
 

@@ -11,19 +11,35 @@ namespace FuelConsumption.WebCrawler.Tests
     {
         private ParserTestsFixture Fixture { get; }
 
-        private CarModelHyperlinksParser Parser { get; }
-
         public CarModelHyperlinksParserTest(ParserTestsFixture fixture)
         {
             Fixture = fixture;
-            Parser = new CarModelHyperlinksParser();
         }
 
         [Fact]
-        public void ParseHyperlinks_NoKeywords_GiveAll()
+        public void ParseHyperlinks_DoNotParse_GiveNone()
         {
+            var parser = new CarModelHyperlinksParser(
+                (string hypertext) => false, // zergliedere die Webseite NICHT
+                (string carModel) => true // gib alle Automodelle zurück
+            );
+
             IEnumerable<Uri> hyperlinks =
-                Parser.ParseHyperlinks(Fixture.CarModelsWebPageContentSample, null);
+                parser.ParseHyperlinks(Fixture.CarModelsWebPageContentSample);
+
+            Assert.NotNull(hyperlinks);
+            Assert.Empty(hyperlinks);
+        }
+
+        [Fact]
+        public void ParseHyperlinks_DoParse_DoNotFilter_GiveAll()
+        {
+            var parser = new CarModelHyperlinksParser(
+                (string hypertext) => true, // zergliedere die Webseite
+                (string carModel) => true // gib alle Automodelle zurück
+            );
+
+            IEnumerable<Uri> hyperlinks = parser.ParseHyperlinks(Fixture.CarModelsWebPageContentSample);
 
             Assert.NotNull(hyperlinks);
             IEnumerable<string> urls = from address in hyperlinks select address.ToString().ToLower();
@@ -35,10 +51,19 @@ namespace FuelConsumption.WebCrawler.Tests
         }
 
         [Fact]
-        public void ParseHyperlinks_HasKeywords_GiveOnesContainingKeyword()
+        public void ParseHyperlinks_DoParse_DoFilter_GiveOnesContainingKeyword()
         {
-            IEnumerable<Uri> hyperlinks =
-                Parser.ParseHyperlinks(Fixture.CarModelsWebPageContentSample, new[] { "JETTA", "ID3" });
+            var keywords = new string[] { "JETTA", "ID3" };
+
+            var parser = new CarModelHyperlinksParser(
+                (string hypertext) => true, // zergliedere die Webseite
+                (string carModel) => { // suche die Automodelle aus:
+                    carModel = carModel.ToUpper();
+                    return keywords.Any(keyword => carModel.Contains(keyword));
+                }
+            );
+
+            IEnumerable<Uri> hyperlinks = parser.ParseHyperlinks(Fixture.CarModelsWebPageContentSample);
 
             Assert.NotNull(hyperlinks);
             IEnumerable<string> urls = from address in hyperlinks select address.ToString().ToLower();

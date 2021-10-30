@@ -11,19 +11,36 @@ namespace FuelConsumption.WebCrawler.Tests
     {
         private ParserTestsFixture Fixture { get; }
 
-        private CarBrandHyperlinksParser Parser { get; }
-
         public CarBrandHyperlinksParserTest(ParserTestsFixture fixture)
         {
             Fixture = fixture;
-            Parser = new CarBrandHyperlinksParser();
         }
 
         [Fact]
-        public void ParseHyperlinks_NoKeywords_GiveAll()
+        public void ParseHyperlinks_DoNotParse_GiveNone()
         {
+            var parser = new CarBrandHyperlinksParser(
+                (string hypertext) => false, // zergliedere die Webseite nicht
+                (string carBrand) => true // gib alle Marken zurück
+            );
+
             IEnumerable<Uri> hyperlinks =
-                Parser.ParseHyperlinks(Fixture.CarBrandsWebPageContentSample, null);
+                parser.ParseHyperlinks(Fixture.CarBrandsWebPageContentSample);
+
+            Assert.NotNull(hyperlinks);
+            Assert.Empty(hyperlinks);
+        }
+
+        [Fact]
+        public void ParseHyperlinks_DoParse_DoNotFilter_GiveAll()
+        {
+            var parser = new CarBrandHyperlinksParser(
+                (string hypertext) => true, // zergliedere die Webseite
+                (string carBrand) => true // gib alle Marken zurück
+            );
+
+            IEnumerable<Uri> hyperlinks =
+                parser.ParseHyperlinks(Fixture.CarBrandsWebPageContentSample);
 
             Assert.NotNull(hyperlinks);
             IEnumerable<string> urls = (from url in hyperlinks select url.ToString().ToLower());
@@ -35,11 +52,19 @@ namespace FuelConsumption.WebCrawler.Tests
         }
 
         [Fact]
-        public void ParseHyperlinks_HasKeywords_GiveOnesContainingKeyword()
+        public void ParseHyperlinks_DoParse_DoFilter_GiveOnesContainingKeyword()
         {
-            IEnumerable<Uri> hyperlinks =
-                Parser.ParseHyperlinks(Fixture.CarBrandsWebPageContentSample,
-                                       new string[] { "HYUNDAI", "TOYOTA" });
+            var keywords = new string[] { "HYUNDAI", "TOYOTA" };
+
+            var parser = new CarBrandHyperlinksParser(
+                (string hypertext) => true, // zergliedere die Webseite
+                (string carBrand) => { // suche die Marken aus:
+                    carBrand = carBrand.ToUpper();
+                    return keywords.Any(keyword => carBrand.Contains(keyword));
+                }
+            );
+
+            IEnumerable<Uri> hyperlinks = parser.ParseHyperlinks(Fixture.CarBrandsWebPageContentSample);
 
             Assert.NotNull(hyperlinks);
             IEnumerable<string> urls = (from address in hyperlinks select address.ToString().ToLower());

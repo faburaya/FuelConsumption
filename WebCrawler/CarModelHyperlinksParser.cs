@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace FuelConsumption.WebCrawler
@@ -17,12 +16,31 @@ namespace FuelConsumption.WebCrawler
                       RegexOptions.Compiled),
         };
 
-        /// <inheritdoc/>
-        public IEnumerable<Uri> ParseHyperlinks(string hypertext, IEnumerable<string> keywords)
-        {
-            var modelsByName = new SortedDictionary<string, Uri>();
+        private readonly Func<string, bool> _shouldParsePage;
+        
+        private readonly Func<string, bool> _carModelFilter;
 
-            keywords = from x in (keywords ?? new string[0]) select x.ToLower();
+        /// <summary>
+        /// Erstellet eine neue Instanz von <see cref="CarModelHyperlinksParser"/>.
+        /// </summary>
+        /// <param name="shouldParsePage">Diese Rückrufaktion wird nur einmal aufgerufen mit dem gesamten Inhalt des Hypertexts und entscheidet, ob der Hypertext überhaupt zergliedert wird.</param>
+        /// <param name="carModelFilter">Diese Rückrufaktion sucht die Namen der Automodelle aus, deren Hyperlinks zurückgegeben werden.</param>
+        public CarModelHyperlinksParser(Func<string, bool> shouldParsePage,
+                                        Func<string, bool> carModelFilter)
+        {
+            _shouldParsePage = shouldParsePage;
+            _carModelFilter = carModelFilter;
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<Uri> ParseHyperlinks(string hypertext)
+        {
+            if (!_shouldParsePage(hypertext))
+            {
+                return new Uri[] { };
+            }
+
+            var modelsByName = new SortedDictionary<string, Uri>();
 
             foreach (Regex regex in CarModelHyperlinkRegexes)
             {
@@ -31,7 +49,7 @@ namespace FuelConsumption.WebCrawler
                 {
                     string carModel = match.Groups["model"].Value.ToLower();
 
-                    if (!keywords.Any() || keywords.Any(keyword => carModel.Contains(keyword)))
+                    if (_carModelFilter(carModel))
                     {
                         modelsByName[carModel] = new Uri(match.Groups[0].Value);
                     }

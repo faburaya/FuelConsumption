@@ -11,19 +11,34 @@ namespace FuelConsumption.WebCrawler.Tests
     {
         private ParserTestsFixture Fixture { get; }
 
-        private TrimLevelHyperlinksParser Parser { get; }
-
         public TrimLevelHyperlinksParserTest(ParserTestsFixture fixture)
         {
             Fixture = fixture;
-            Parser = new TrimLevelHyperlinksParser();
         }
 
         [Fact]
-        public void ParseHyperlinks_NoKeywords_GiveAll()
+        public void ParseHyperlinks_DoNotParse_GiveNone()
         {
-            IEnumerable<Uri> hyperlinks =
-                Parser.ParseHyperlinks(Fixture.TrimLevelsWebPageContentSample, null);
+            var parser = new TrimLevelHyperlinksParser(
+                (string hypertext) => false, // zergliedere die Webseite NICHT
+                (string trimLevel) => true // gib alle "Trim Level" zurück
+            );
+
+            IEnumerable<Uri> hyperlinks = parser.ParseHyperlinks(Fixture.TrimLevelsWebPageContentSample);
+
+            Assert.NotNull(hyperlinks);
+            Assert.Empty(hyperlinks);
+        }
+
+        [Fact]
+        public void ParseHyperlinks_DoParse_DoNotFilter_GiveAll()
+        {
+            var parser = new TrimLevelHyperlinksParser(
+                (string hypertext) => true, // zergliedere die Webseite
+                (string trimLevel) => true // gib alle "Trim Level" zurück
+            );
+
+            IEnumerable<Uri> hyperlinks = parser.ParseHyperlinks(Fixture.TrimLevelsWebPageContentSample);
 
             Assert.NotNull(hyperlinks);
             IEnumerable<string> urls = from address in hyperlinks select address.ToString().ToLower();
@@ -33,10 +48,19 @@ namespace FuelConsumption.WebCrawler.Tests
         }
 
         [Fact]
-        public void ParseHyperlinks_HasKeywords_GiveOnesContainingKeyword()
+        public void ParseHyperlinks_DoParse_DoFilter_GiveOnesContainingKeyword()
         {
-            IEnumerable<Uri> hyperlinks =
-                Parser.ParseHyperlinks(Fixture.TrimLevelsWebPageContentSample, new[] { "GTI", "TGI" });
+            var keywords = new string[] { "GTI", "TGI" };
+
+            var parser = new TrimLevelHyperlinksParser(
+                (string hypertext) => true, // zergliedere die Webseite
+                (string trimLevel) => { // suche die "Trim Levels" aus:
+                    trimLevel = trimLevel.ToUpper();
+                    return keywords.Any(keyword => trimLevel.Contains(keyword));
+                }
+            );
+
+            IEnumerable<Uri> hyperlinks = parser.ParseHyperlinks(Fixture.TrimLevelsWebPageContentSample);
 
             Assert.NotNull(hyperlinks);
             IEnumerable<string> urls = from address in hyperlinks select address.ToString().ToLower();
