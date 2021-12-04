@@ -1,4 +1,6 @@
-﻿using Reusable.DataModels;
+﻿using System.Text.Json;
+
+using Reusable.DataModels;
 
 namespace FuelConsumption.WebCrawler
 {
@@ -60,5 +62,7 @@ namespace FuelConsumption.WebCrawler
         /// Kraftstoffverbrauch außerorts in L/100km
         /// </summary>
         public float FuelConsumptionHighway { get; set; }
+
+        public override string ToString() => JsonSerializer.Serialize(this);
     }
 }
