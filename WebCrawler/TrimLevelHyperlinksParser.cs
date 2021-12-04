@@ -12,7 +12,7 @@ namespace FuelConsumption.WebCrawler
     public class TrimLevelHyperlinksParser : Reusable.WebAccess.IHyperlinksParser
     {
         private static Regex TrimLevelHyperlinkRegex { get; } =
-            new Regex(@"https://www.ultimatespecs.com/de/car-specs/(?<brand>[\w-]+)/\d+/\k<brand>-(?<level>[\w-]+).html", RegexOptions.Compiled);
+            new Regex(@"/de/car-specs/(?<brand>[\w-]+)/\d+/\k<brand>-(?<level>[\w-]+).html", RegexOptions.Compiled);
 
         private readonly Func<string, bool> _shouldParsePage;
 
@@ -43,11 +43,14 @@ namespace FuelConsumption.WebCrawler
             MatchCollection matches = TrimLevelHyperlinkRegex.Matches(hypertext);
             foreach (Match match in matches)
             {
-                string url = match.Groups[0].Value.ToLower();
-                string trimLevel = match.Groups["level"].Value;
+                string trimLevel = match.Groups["level"].Value.ToLower();
 
                 if (_trimLevelFilter(trimLevel))
                 {
+                    string href = match.Groups[0].Value;
+                    string url =
+                        (href.StartsWith("http") ? href : "https://www.ultimatespecs.com" + href);
+
                     trimLevels.Add(url);
                 }
             }

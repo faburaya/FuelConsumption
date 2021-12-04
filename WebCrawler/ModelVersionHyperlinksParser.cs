@@ -11,7 +11,7 @@ namespace FuelConsumption.WebCrawler
     public class ModelVersionHyperlinksParser : Reusable.WebAccess.IHyperlinksParser
     {
         private static Regex ModelVersionHyperlinkRegex { get; } =
-            new Regex(@"https://www.ultimatespecs.com/de/car-specs/[\w-]+/M\d+/([\w-]+)", RegexOptions.Compiled);
+            new Regex(@"/de/car-specs/[\w-]+/M\d+/([\w-]+)", RegexOptions.Compiled);
 
         private readonly Func<string, bool> _shouldParsePage;
 
@@ -46,7 +46,15 @@ namespace FuelConsumption.WebCrawler
 
                 if (_modelVersionFilter(versionLabel))
                 {
-                    versionsByLabel[versionLabel] = new Uri(match.Groups[0].Value);
+                    string href = match.Groups[0].Value;
+                    if (!href.StartsWith("http"))
+                    {
+                        versionsByLabel[versionLabel] = new Uri("https://www.ultimatespecs.com" + href);
+                    }
+                    else
+                    {
+                        versionsByLabel[versionLabel] = new Uri(href);
+                    }
                 }
             }
 
