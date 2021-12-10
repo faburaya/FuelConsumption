@@ -15,7 +15,8 @@ namespace FuelConsumption.WebCrawler
 
         public CarSpecsScraper(IHypertextFetcher hypertextFetcher)
         {
-            _scraper = new DatenSauger<CarSpecifications>(hypertextFetcher, new SimpleConsoleLogger());
+            _scraper = new DatenSauger<CarSpecifications>(
+                hypertextFetcher, new SimpleFileLogger("scraper.log.txt"));
         }
 
         public void ScrapeCarSpecs()

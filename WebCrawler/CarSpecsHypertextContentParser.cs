@@ -22,7 +22,8 @@ namespace FuelConsumption.WebCrawler
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(hypertext);
 
-            IEnumerable<CallbackTryParseRow> parsers = allParsers;
+            IList<CallbackTryParseRow> parsers = allParsers.ToArray();
+            int countParserNotYetMatched = parsers.Count;
 
             IEnumerable<HtmlNode> allRowElements =
                 from node in htmlDocument.DocumentNode.SelectNodes("//tr")
@@ -32,16 +33,18 @@ namespace FuelConsumption.WebCrawler
             foreach (HtmlNode node in allRowElements)
             {
                 // versucht alle Zerglieder, die nocht nicht erfolgreich sind:
-                foreach (CallbackTryParseRow callbackTryParse in parsers)
+                for (int idx = 0; idx < parsers.Count; ++idx)
                 {
-                    if (callbackTryParse(node, specs))
+                    CallbackTryParseRow callbackTryParse = parsers[idx];
+                    if (callbackTryParse != null && callbackTryParse(node, specs))
                     {
-                        parsers = (from x in parsers where x != callbackTryParse select x);
+                        --countParserNotYetMatched;
+                        parsers[idx] = null;
                         break;
                     }
                 }
 
-                if (!parsers.Any())
+                if (countParserNotYetMatched == 0)
                 {
                     return new[] { specs };
                 }
@@ -49,7 +52,9 @@ namespace FuelConsumption.WebCrawler
 
             // meldet alle Zerglieder, die nicht erfolgreich waren
             throw new AggregateException("Zergliederung der Spezifikationen is gescheitert!",
-                from parser in parsers select new ParserException($"{parser.Method.Name} ohne Erfolg"));
+                from parser in parsers
+                where parser != null
+                select new ParserException($"{parser.Method.Name} ohne Erfolg"));
         }
 
         private delegate bool CallbackTryParseRow(HtmlNode rowElement, CarSpecifications specs);
@@ -156,18 +161,9 @@ namespace FuelConsumption.WebCrawler
             if (match.Success
                 && ushort.TryParse(match.Groups[1].Value, out ushort gearSpeedsCount))
             {
-                TransmissionType transmission;
-                switch (match.Groups[2].Value.ToLower())
-                {
-                    case "automatic":
-                        transmission = TransmissionType.Automatic;
-                        break;
-                    case "manual":
-                        transmission = TransmissionType.Manual;
-                        break;
-                    default:
-                        throw new ParserException($"Das Getriebe '{match.Groups[0].Value}' kann nicht zergliedert werden!");
-                }
+                TransmissionType transmission = (match.Groups[2].Value.ToLower() == "manual"
+                    ? TransmissionType.Manual
+                    : TransmissionType.Automatic);
 
                 return (gearSpeedsCount, transmission);
             }
