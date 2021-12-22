@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataCollector", "DataCollec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebCrawler", "WebCrawler\WebCrawler.csproj", "{B8E0A09A-5DEF-411C-8E16-071C7C4436F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebCrawler.Tests", "WebCrawler.Tests\WebCrawler.Tests.csproj", "{7C737100-1334-4AA6-9436-29638D4AB42A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebCrawler.Tests", "WebCrawler.Tests\WebCrawler.Tests.csproj", "{7C737100-1334-4AA6-9436-29638D4AB42A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSpecsParser", "TestSpecsParser\TestSpecsParser.csproj", "{2F05DE3D-8DB6-4EB2-A0CE-271F03197D90}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{7C737100-1334-4AA6-9436-29638D4AB42A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C737100-1334-4AA6-9436-29638D4AB42A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C737100-1334-4AA6-9436-29638D4AB42A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F05DE3D-8DB6-4EB2-A0CE-271F03197D90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F05DE3D-8DB6-4EB2-A0CE-271F03197D90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F05DE3D-8DB6-4EB2-A0CE-271F03197D90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F05DE3D-8DB6-4EB2-A0CE-271F03197D90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
